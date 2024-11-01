@@ -30,6 +30,8 @@ stan_programs/simple_poisson_regression
 
 # RStudio files
 .Rproj.user/
+.Rproj.user/*
+.Rproj.user
 
 # produced vignettes
 vignettes/*.html
@@ -50,3 +52,4 @@ vignettes/*.pdf
 rsconnect/
 
 invoices
+/.Rproj.user
