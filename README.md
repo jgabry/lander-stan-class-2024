@@ -1,4 +1,4 @@
-# Lander Analytics Bayes/Stan Class 2023
+# Lander Analytics Bayes/Stan Class 2024
 
 ### Install needed software
 
