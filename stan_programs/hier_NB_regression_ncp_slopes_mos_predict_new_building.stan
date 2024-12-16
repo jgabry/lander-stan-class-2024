@@ -1,6 +1,6 @@
 // Varying intercepts, varying slopes, latent time trend
 // Non-centered parameterization
-// + forecasts for future months in generated quantities
+// + forecasts for future months AND new buildings in generated quantities
 data {
   int<lower=1> N;
   array[N] int<lower=0> complaints;
@@ -60,6 +60,8 @@ transformed parameters {
   for (m in 2:M) {
     mo[m] += rho * mo[m-1];          // mo[m] = mo[m] + rho * mo[m-1];
   }
+
+  vector[N] eta = mu[building_idx] + kappa[building_idx] .* traps + mo[mo_idx] + log_sq_foot;
 }
 model {
   inv_phi ~ normal(0, 1);
@@ -78,18 +80,7 @@ model {
   sigma_mo ~ normal(0, 1);
   rho_raw ~ beta(10, 5);
 
-  { // start local block/scope just for demonstration purposes (not really needed here)
-
-   /*
-     new variables need to be declared at the top of the block unless they are
-     declared within a local scope (within curly braces). this is sometimes useful
-     in the model block to declare and define temporary variables closer to where
-     we use them.
-  */
-   vector[N] eta = mu[building_idx] + kappa[building_idx] .* traps + mo[mo_idx] + log_sq_foot;
-   complaints ~ neg_binomial_2_log(eta, phi);
-  } // end local block/scope
-
+  complaints ~ neg_binomial_2_log(eta, phi);
 }
 generated quantities {
   // we'll predict number of complaints for each building
@@ -99,7 +90,7 @@ generated quantities {
   vector[N_new_buildings] kappa_new =
     to_vector(normal_rng(beta + new_buildings_data * gamma, sigma_kappa));
   vector[N_new_buildings] mu_new =
-    to_vector(normal_rng(alpha + new_buildings_data * zeta,sigma_mu));
+    to_vector(normal_rng(alpha + new_buildings_data * zeta, sigma_mu));
 
   // first future month depends on last observed month (the Mth month)
   // the remaining future months depends only on previous future months
