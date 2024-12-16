@@ -1,4 +1,4 @@
-# Lander Analytics Bayes/Stan Class 2024
+# CNA Lander Analytics Bayes/Stan Workshop
 
 ### Install needed software
 

@@ -26,7 +26,8 @@ interactively evaluate the R markdown document we’ll be using.
 
 ## Install R packages
 
-In an R session run the following to install packages we'll use (or might use, time permitting) in the workshop.
+In an R session run the following to install packages we'll use (or might use,
+time permitting) in the workshop.
 
 ```
 install.packages(

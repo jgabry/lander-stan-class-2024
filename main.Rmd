@@ -1,5 +1,5 @@
 ---
-title: "Bayes and Stan Workshop"
+title: "CNA Bayes and Stan Workshop"
 author: "Lander Analytics"
 date: "December 2024"
 output:
