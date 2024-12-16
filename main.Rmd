@@ -18,10 +18,6 @@ knitr::opts_chunk$set(
   fig.align = "center",
   comment = NA
 )
-
-# override weird bug in formatting when printing summaries inside R markdown
-# (should be fixed soon by updates to posterior or rmarkdown packages)
-# print.draws_summary <- function(x, ...) print(as.data.frame(x), ...)
 ```
 
 ```{r setup, results="hide", message=FALSE}
@@ -665,7 +661,7 @@ comp_multi_NB <- cmdstan_model("stan_programs/multiple_NB_regression.stan")
 ### Fit to data and check the fit
 
 ```{r fit_multi_NB}
-fit_multi_NB <- comp_multi_NB$sample(data = standata_simple)
+fit_multi_NB <- comp_multi_NB$sample(data = standata_simple, refresh = 500)
 ```
 
 
