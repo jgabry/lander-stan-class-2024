@@ -14,5 +14,5 @@ model {
   beta ~ normal(-0.25, 0.5);
 }
 generated quantities {
-  array[N] y_rep = poisson_log_rng(alpha + beta * traps);
+  array[N] int y_rep = poisson_log_rng(alpha + beta * traps);
 }
