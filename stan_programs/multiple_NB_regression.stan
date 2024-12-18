@@ -1,5 +1,4 @@
 // negative binomial multiple regression
-// need to add the missing lines of code (see comments below)
 data {
   int<lower=1> N;
   array[N] int<lower=0> complaints;
@@ -11,20 +10,18 @@ parameters {
   real alpha;
   real beta;
   real beta_super;
-  // declare inv_phi, which is constrained to be positive
-  // (easier to think about prior on 1/phi than phi in this case)
+  real<lower=0> inv_phi; // 1/phi (I personally find it more intuitive)
 }
 transformed parameters {
   vector[N] eta = alpha + beta * traps + beta_super * live_in_super + log_sq_foot;
-  // create phi from inv_phi
+  real<lower=0> phi = inv(inv_phi);  // == 1 / inv_phi 
 }
 model {
-
-  // change data model to neg_binomial_2_log
+  complaints ~ neg_binomial_2_log(eta, phi);
 
   // add prior on inv_phi
-
-  alpha ~ normal(2, 1);  // target += normal_lpdf(alpha | 2, 1)
+  inv_phi ~ normal(0, 1);
+  alpha ~ normal(2, 1); 
   beta ~ normal(-0.25, 0.5);
   beta_super ~ normal(-0.5, 1);
 }
