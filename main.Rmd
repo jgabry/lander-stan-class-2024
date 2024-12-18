@@ -43,14 +43,14 @@ standata_hier <- readRDS("data/standata_hier.RDS")
 ### Background
 
 Imagine that you are a statistician or data scientist working as an independent
-contractor. One of your clients is a company that owns many residential buildings
-throughout New York City. The property manager explains that they are concerned about the number
-of cockroach complaints that they receive from their buildings. Previously
-the company has offered ad-hoc visits from a pest inspector as a solution to
-this problem. While this is the default solution of many property managers in
-NYC, the tenants are rarely home when the inspector visits, and so the manager
-reasons that this is a relatively expensive solution that is currently not very
-effective.
+contractor. One of your clients is a company that owns many residential
+buildings throughout New York City. The property manager explains that they are
+concerned about the number of cockroach complaints that they receive from their
+buildings. Previously the company has offered ad-hoc visits from a pest
+inspector as a solution to this problem. While this is the default solution of
+many property managers in NYC, the tenants are rarely home when the inspector
+visits, and so the manager reasons that this is a relatively expensive solution
+that is currently not very effective.
 
 One alternative to this problem is to deploy long term bait stations. In this
 alternative, child and pet safe bait stations are installed throughout the
@@ -180,7 +180,7 @@ $\textrm{traps}$. How should we model the number of complaints?
 
 We already know some rudimentary information about what we should expect. The
 number of complaints over a month should be either zero or an integer. The
-property manager tells us that it is possible but unlikely that number of
+property manager tells us that it is possible but unlikely that the number of
 complaints in a given month is zero. Occasionally there are a very large number
 of complaints in a single month. A common way of modeling this sort of skewed,
 single bounded count data is as a Poisson random variable. 
@@ -397,10 +397,10 @@ mcmc_hist(
 ```
 
 
-From the posterior of `beta`, it appears increasing the number of bait stations set in a
-building is associated with a lower number of complaints about cockroaches that were
-made in the following month. However, we still need to consider how well the
-model fits.
+From the posterior of `beta`, it appears increasing the number of bait stations
+set in a building is associated with a lower number of complaints about
+cockroaches that were made in the following month. However, we still need to
+consider how well the model fits.
 
 To try at home: change the priors and see how it affects the posterior. 
 
@@ -422,10 +422,10 @@ ppc_ecdf_overlay(y = standata_simple$complaints, yrep = y_rep[1:200,])
 
 In the plot above we have the kernel density estimate of the observed data ($y$,
 thicker curve) and 200 simulated data sets ($y_{rep}$, thin curves) from the
-posterior predictive distribution. Here the posterior predictive
-simulations are not as dispersed as the real data and don't seem to capture the
-rate of zeros well at all. This suggests the Poisson model may not be sufficiently
-flexible for this data.
+posterior predictive distribution. Here the posterior predictive simulations are
+not as dispersed as the real data and don't seem to capture the rate of zeros
+well at all. This suggests the Poisson model may not be sufficiently flexible
+for this data.
 
 Let's explore this further by looking directly at the proportion of zeros in the
 real data and predicted data.
