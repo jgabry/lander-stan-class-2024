@@ -529,7 +529,7 @@ $$
 
 
 We will also include whether there is a live-in super or not as a predictor
-for the number of complaints, which gives us gives us:
+for the number of complaints, which gives us:
 
 $$
 \eta_{b,t} = \alpha + \beta \, \textrm{traps}_{b,t} +
