@@ -24,20 +24,19 @@ parameters {
   vector[K] zeta;          // coefficients on building-level predictors in model for mu
 
   // for varying slopes
-  // N(0,1) params for non-centered param of building-specific slopes
-  // sd of buildings-specific slopes
-  // 'global' slope on traps variable
-  // coefficients on building-level predictors in model for kappa
+  vector[J] kappa_raw;        
+  real<lower=0> sigma_kappa;  
+  real beta;              
+  vector[K] gamma;          
 }
 transformed parameters {
   real phi = inv(inv_phi);
 
   // non-centered parameterization of building-specific intercepts and slopes
   vector[J] mu = (alpha + building_data * zeta) + sigma_mu * mu_raw;
+  vector[J] kappa = (beta + building_data * gamma) + sigma_kappa * kappa_raw;
   
-  // declare kappa
-  
-  vector[N] eta = // rewrite this to include with kappa
+  vector[N] eta = mu[building_idx] + kappa[building_idx] .* traps + log_sq_foot;
 }
 model {
   complaints ~ neg_binomial_2_log(eta, phi);
@@ -48,7 +47,7 @@ model {
   beta ~ normal(-0.25, 0.5);
   gamma ~ normal(0, 1);
 
-  mu_raw ~ normal(0,1) ;
+  mu_raw ~ normal(0, 1);
   sigma_mu ~ normal(0, 1);
   alpha ~ normal(2, 1);
   zeta ~ normal(0, 1);
