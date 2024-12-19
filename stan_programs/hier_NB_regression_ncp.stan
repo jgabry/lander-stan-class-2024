@@ -1,7 +1,4 @@
-// hierarchical model with non-centered parameterization of mu
-
-// RIGHT NOW THIS IS SAME AS hier_NB_regression.stan
-// NEED TO CHANGE TO NON-CENTERED PARAMETERIZATION
+// hierarchical model with non-centered parameterization (NCP) of mu
 data {
   int<lower=1> N;
   array[N] int<lower=0> complaints;
@@ -19,10 +16,11 @@ parameters {
   real<lower=0> inv_phi;
 
   vector[K] zeta; // vector of coefficients on building_data variables
-  vector[J] mu;   // vector of building intercepts, mu
+  vector[J] mu_raw;   // vector of building intercepts. N(0,1) for NCP of mu.
   real<lower=0> sigma_mu; // sd of building intercepts, sigma_mu
 }
 transformed parameters {
+  vector[J] mu = alpha + building_data * zeta + sigma_mu * mu_raw;
   vector[N] eta = mu[building_idx] + beta * traps + log_sq_foot;
   real phi = 1 / inv_phi;
 }
@@ -31,8 +29,7 @@ model {
   alpha ~ normal(2, 1);
   beta ~ normal(-0.25, 0.5);
   inv_phi ~ normal(0, 1);
-
-  mu ~ normal(alpha + building_data * zeta, sigma_mu);
+  mu_raw ~ normal(0, 1); // implies mu ~ normal(alpha + building_data * zeta, sigma_mu);
   zeta ~ normal(0, 1);
   sigma_mu ~ normal(0, 1);
 }
