@@ -22,9 +22,9 @@ data {
   // for making forecasts for different hypothetical numbers of traps we could set
   // included in standata_hier_long list
   int<lower=1> M_forward;
-  vector[J] log_sq_foot_pred;  // same as log_sq_foot but just 1 unique value per building
-  int<lower=0> N_hypo_traps;
-  array[N_hypo_traps] int hypo_traps;  // how many traps will we set? 0, 1, 2, ..., 20
+  int<lower=1> N_hypo_traps;
+  array[N_hypo_traps] int<lower=0,upper=N_hypo_traps> hypo_traps;  // 0, 1, 2, ..., 20
+  vector[J] log_sq_foot_pred;  // same as log_sq_foot but 1 unique value per building 
 }
 parameters {
   real<lower=0> inv_phi;   // 1/phi (easier to think about prior for 1/phi instead of phi)
@@ -76,7 +76,8 @@ model {
   sigma_mo ~ normal(0, 1);
   rho_raw ~ beta(10, 5);
 
-  // demonstrate computing eta in model block
+  // just to demonstrate, we can compute eta in model block if we 
+  // don't need it in generated quantities
   vector[N] eta = mu[building_idx] + kappa[building_idx] .* traps + mo[mo_idx] + log_sq_foot;
   complaints ~ neg_binomial_2_log(eta, phi);
 }
@@ -85,23 +86,20 @@ generated quantities {
   // at each hypothetical number of traps for M_forward months in the future
   array[J, N_hypo_traps] int y_pred;
   vector[M_forward] mo_forward;
-
-  // first future month depends on last observed month (the Mth month)
-  // the remaining future months depends only on previous future months
+  
   mo_forward[1] = normal_rng(rho * mo[M], sigma_mo);
   for (m in 2:M_forward) {
     mo_forward[m] = normal_rng(rho * mo_forward[m-1], sigma_mo);
   }
-
-  for (j in 1:J) {  // loop over buildings
-    for (i in 1:N_hypo_traps) { // loop over traps
+  
+  for (j in 1:J) {
+    for (i in 1:N_hypo_traps) {
       array[M_forward] int y_pred_by_month;
-      for (m in 1:M_forward) {
+      for (m in 1:M_forward) { 
         real eta_ijm = mu[j] + kappa[j] * hypo_traps[i] + mo_forward[m] + log_sq_foot_pred[j];
         y_pred_by_month[m] = neg_binomial_2_log_rng(eta_ijm, phi);
       }
-      // total number of complaints in building j for number of traps i over M_forward months
-      y_pred[j, i] = sum(y_pred_by_month);
+      y_pred[j,i] = sum(y_pred_by_month);  // complaints in bldg j for traps i over 12 future months
     }
   }
 }
